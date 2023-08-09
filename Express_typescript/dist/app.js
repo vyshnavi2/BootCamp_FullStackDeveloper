@@ -74,7 +74,7 @@ app.delete('/persons/:id', (req, res) => __awaiter(void 0, void 0, void 0, funct
     try {
         const { id } = req.params;
         const client = yield pool.connect();
-        const result = yield client.query('DELETE FROM users WHERE id = $1', [id]);
+        const result = yield client.query('DELETE FROM Persons WHERE id = $1', [id]);
         client.release();
         res.json({ message: 'User deleted successfully' });
     }
