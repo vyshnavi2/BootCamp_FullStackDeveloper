@@ -30,7 +30,7 @@ const pool = new pg_1.Pool({
 // Middleware
 app.use(body_parser_1.default.json());
 app.use((0, cors_1.default)());
-// CRUD operations
+// CRUD operations - Persons
 app.get('/persons', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const client = yield pool.connect();
@@ -54,19 +54,6 @@ app.get('/persons/:id', (req, res) => __awaiter(void 0, void 0, void 0, function
     }
     catch (err) {
         res.status(500).json({ message: 'Error fetching persons' });
-    }
-}));
-app.get('/persons/:id/addresses', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    try {
-        const client = yield pool.connect();
-        const result = yield client.query('SELECT * FROM addresses WHERE person_id = $1', [id]);
-        client.release();
-        res.json(result.rows);
-    }
-    catch (error) {
-        console.error(error);
-        res.status(500).send('Error fetching addresses');
     }
 }));
 app.post('/persons', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -106,6 +93,51 @@ app.delete('/persons/:id', (req, res) => __awaiter(void 0, void 0, void 0, funct
     }
     catch (err) {
         res.status(500).json({ message: 'Error deleting user' });
+    }
+}));
+// CRUD operations - Addresses
+app.get('/persons/:id/addresses', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        const client = yield pool.connect();
+        const result = yield client.query('SELECT * FROM addresses WHERE person_id = $1', [id]);
+        client.release();
+        res.json(result.rows);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Error fetching addresses');
+    }
+}));
+app.post('/addresses', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { person_id, street, city, state, zip_code } = req.body;
+        const result = yield pool.query('INSERT INTO addresses (person_id, street, city, state, zip_code) VALUES ($1, $2, $3, $4, $5)', [person_id, street, city, state, zip_code]);
+        res.json(result.rows[0]);
+    }
+    catch (err) {
+        res.status(500).json({ message: 'Error creating address' });
+    }
+}));
+app.put('/addresses/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const { street, city, state, zip_code } = req.body;
+        const result = yield pool.query('UPDATE addresses SET street = $1, city = $2, state = $3, zip_code = $4 WHERE id = $5', [street, city, state, zip_code, id]);
+        res.json(result.rows[0]);
+    }
+    catch (err) {
+        res.status(500).json({ message: 'Error updating address' });
+    }
+}));
+app.delete('/addresses/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        yield pool.query('DELETE FROM addresses WHERE id = $1', [id]);
+        res.json({ message: 'Address deleted successfully' });
+    }
+    catch (err) {
+        res.status(500).json({ message: 'Error deleting address' });
     }
 }));
 // Start the server
