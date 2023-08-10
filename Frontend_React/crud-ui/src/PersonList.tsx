@@ -25,7 +25,7 @@ const PersonList: React.FC = () => {
 
   const createPerson = async () => {
     try {
-      await axios.post('/api/people', {
+      await axios.post('http://localhost:3000/Persons', {
         first_name,
         last_name,
         phone_number,
@@ -39,7 +39,7 @@ const PersonList: React.FC = () => {
 
   const deletePerson = async (id: number) => {
     try {
-      await axios.delete(`/api/people/${id}`);
+      await axios.delete(`http://localhost:3000/Persons/${id}`);
       fetchPeople();
     } catch (error) {
       console.error('Error deleting person:', error);
