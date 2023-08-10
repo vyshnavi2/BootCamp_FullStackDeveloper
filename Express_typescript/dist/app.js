@@ -43,12 +43,38 @@ app.get('/persons', (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         res.status(500).json({ message: 'Error fetching persons' });
     }
 }));
+app.get('/persons/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const client = yield pool.connect();
+        const result = yield client.query('SELECT * FROM persons WHERE id = $1', [id]);
+        console.log(result);
+        client.release();
+        res.json(result.rows);
+    }
+    catch (err) {
+        res.status(500).json({ message: 'Error fetching persons' });
+    }
+}));
+app.get('/persons/:id/addresses', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        const client = yield pool.connect();
+        const result = yield client.query('SELECT * FROM addresses WHERE person_id = $1', [id]);
+        client.release();
+        res.json(result.rows);
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).send('Error fetching addresses');
+    }
+}));
 app.post('/persons', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { first_name, last_name, phone_number } = req.body;
         console.log(req);
         const client = yield pool.connect();
-        const result = yield client.query('INSERT INTO persons (first_name, last_name, phone_number) VALUES ($1, $2 $3) RETURNING *', [first_name, last_name, phone_number]);
+        const result = yield client.query('INSERT INTO persons (first_name, last_name, phone_number) VALUES ($1, $2, $3)', [first_name, last_name, phone_number]);
         console.log(result);
         client.release();
         res.json(result.rows[0]);
@@ -60,9 +86,9 @@ app.post('/persons', (req, res) => __awaiter(void 0, void 0, void 0, function* (
 app.put('/persons/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { id } = req.params;
-        const { name, email } = req.body;
+        const { first_name, last_name, phone_number } = req.body;
         const client = yield pool.connect();
-        const result = yield client.query('UPDATE users SET name = $1, email = $2 WHERE id = $3 RETURNING *', [name, email, id]);
+        const result = yield client.query('UPDATE persons SET first_name = $1, last_name = $2,phone_number = $3  WHERE id = $4', [first_name, last_name, phone_number, id]);
         client.release();
         res.json(result.rows[0]);
     }
