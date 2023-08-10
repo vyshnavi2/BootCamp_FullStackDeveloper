@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+} from '@mui/material';
 
 interface Person {
   id: number;
@@ -10,9 +20,9 @@ interface Person {
 
 const PersonList: React.FC = () => {
   const [people, setPeople] = useState<Person[]>([]);
-  const [first_name, setfirst_name] = useState('');
-  const [last_name, setlast_name] = useState('');
-  const [phone_number, setphone_number] = useState('');
+  const [first_name, setFirst_name] = useState('');
+  const [last_name, setLast_name] = useState('');
+  const [phone_number, setPhone_number] = useState('');
 
   const fetchPeople = async () => {
     try {
@@ -47,9 +57,9 @@ const PersonList: React.FC = () => {
   };
 
   const clearForm = () => {
-    setfirst_name('');
-    setlast_name('');
-    setphone_number('');
+    setFirst_name('');
+    setLast_name('');
+    setPhone_number('');
   };
 
   useEffect(() => {
@@ -59,35 +69,50 @@ const PersonList: React.FC = () => {
   return (
     <div>
       <h2>People List</h2>
-      <ul>
-        {people.map((person) => (
-          <li key={person.id}>
-            {person.first_name} {person.last_name} - {person.phone_number}
-            <button onClick={() => deletePerson(person.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+      <TableContainer>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>First Name</TableCell>
+              <TableCell>Last Name</TableCell>
+              <TableCell>Phone Number</TableCell>
+              <TableCell>Action</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {people.map((person) => (
+              <TableRow key={person.id}>
+                <TableCell>{person.first_name}</TableCell>
+                <TableCell>{person.last_name}</TableCell>
+                <TableCell>{person.phone_number}</TableCell>
+                <TableCell>
+                  <Button onClick={() => deletePerson(person.id)}>Delete</Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
       <h2>Create Person</h2>
       <div>
-        <input
-          type="text"
-          placeholder="First Name"
+        <TextField
+          label="First Name"
           value={first_name}
-          onChange={(e) => setfirst_name(e.target.value)}
+          onChange={(e) => setFirst_name(e.target.value)}
         />
-        <input
-          type="text"
-          placeholder="Last Name"
+        <TextField
+          label="Last Name"
           value={last_name}
-          onChange={(e) => setlast_name(e.target.value)}
+          onChange={(e) => setLast_name(e.target.value)}
         />
-        <input
-          type="text"
-          placeholder="Phone Number"
+        <TextField
+          label="Phone Number"
           value={phone_number}
-          onChange={(e) => setphone_number(e.target.value)}
+          onChange={(e) => setPhone_number(e.target.value)}
         />
-        <button onClick={createPerson}>Create</button>
+        <Button variant="contained" onClick={createPerson}>
+          Create
+        </Button>
       </div>
     </div>
   );
